@@ -2,20 +2,28 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>製品編集</title>
+    <title>日付・時間編集</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='base-style.css') }}">
 </head>
 <body>
-    <h1>製品を編集</h1>
+    <h1>日付・時間を編集</h1>
     <ul class="breadcrumb">
         <li><a href="{{ url_for('index') }}">HOME</a></li>
-        <li><a href="{{ url_for('product.list') }}">製品一覧</a></li>
-        <li>製品編集</li>
+        <li><a href="{{ url_for('product.list') }}">日付・時間一覧</a></li>
+        <li>日付・時間編集</li>
     </ul>
 
     <form action="{{ url_for('product.edit', product_id=product.id) }}" method="post">
-        <label>製品名: <input type="text" name="name" value="{{ product.name }}" required></label><br>
-        <label>価格: <input type="number" step="1" name="price" value="{{ product.price }}" required></label><br>
+        <label>日付: <input type="date" name="name" value="{{ product.name }}" required></label><br>
+        
+        <label>時間: 
+            <select name="price" required>
+                {% for i in range(24) %}
+                    <option value="{{ i }}" {% if product.price == i %}selected{% endif %}>
+                        {{ i }}:00  </option>
+                {% endfor %}
+            </select>
+        </label><br>
         <button type="submit">保存</button>
     </form>
 </body>
