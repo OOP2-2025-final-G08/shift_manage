@@ -2,15 +2,16 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>シフト管理システム</title>
+
+    <title>シフト希望提出システム</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='base-style.css') }}">
 </head>
 <body>
-    <h1>シフト管理システム</h1>
+    <h1>シフト希望提出システム</h1>
     <ul>
-      <li><a href="{{ url_for('user.list') }}">ユーザー（顧客）</a></li>
+      <li><a href="{{ url_for('user.list') }}">スタッフ登録</a></li>
       <li><a href="{{ url_for('product.list') }}">日付・時間</a></li>
-      <li><a href="{{ url_for('order.list') }}">注文</a></li>
+      <li><a href="{{ url_for('order.list') }}">希望日確認</a></li>
     </ul>
 </body>
 </html>
