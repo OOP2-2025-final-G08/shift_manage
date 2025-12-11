@@ -16,11 +16,6 @@
     <form action="{{ url_for('user.add') }}" method="post">
         <label>名前: <input type="text" name="name" required></label><br>
         <label>年齢: <input type="number" name="age" required></label><br>
-        <label>性別: 
-            <input type="radio" name="gender" value="男性" checked> 男性
-            <input type="radio" name="gender" value="女性"> 女性
-            <input type="radio" name="gender" value="その他"> その他
-        </label><br>
         <button type="submit">追加</button>
     </form>
 </body>
