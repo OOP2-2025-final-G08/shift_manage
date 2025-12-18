@@ -1,37 +1,30 @@
 <!DOCTYPE html>
 <html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <title>データ一覧</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='base-style.css') }}">
-</head>
+<head><meta charset="UTF-8"><title>スタッフ登録</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"></head>
 <body>
-    <h1>{{ title }}</h1>
-    <ul class="breadcrumb">
-        <li><a href="{{ url_for('index') }}">HOME</a></li>
-        <li><a href="{{ url_for('user.list') }}">ユーザー一覧</a></li>
-    </ul>
-
-    <a href="{{ url_for('user.add') }}">新規ユーザー追加</a>
-    <table>
-        <thead>
-            <tr>
-                <th>&nbsp;</th>
-                <th>名前</th>
-                <th>年齢</th>
-                <th>性別</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for user in items %}
-            <tr>
-                <td><a href="{{ url_for('user.edit', user_id=user.id) }}">編集</a></td>
-                <td>{{ user.name }}</td>
-                <td>{{ user.age }}</td>
-                <td>{{ user.gender }}</td>
-            </tr>
+<div class="container">
+    <h1>👤 スタッフ登録 (User)</h1>
+    <div class="panel">
+        <form method="POST">
+            名前: <input type="text" name="name" required>
+            性別: 
+            <select name="gender">
+                <option value="男性">男性</option>
+                <option value="女性">女性</option>
+            </select>
+            <button type="submit">登録</button>
+        </form>
+    </div>
+    <div class="panel" style="margin-top:20px;">
+        <table class="styled-table">
+            <tr><th>ID</th><th>名前</th><th>性別</th></tr>
+            {% for u in users %}
+            <tr><td>{{ u.id }}</td><td>{{ u.name }}</td><td>{{ u.gender }}</td></tr>
             {% endfor %}
-        </tbody>
-    </table>
+        </table>
+    </div>
+    <a href="/">TOPへ</a>
+</div>
 </body>
 </html>

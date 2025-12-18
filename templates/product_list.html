@@ -1,35 +1,27 @@
 <!DOCTYPE html>
 <html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <title>日付・時間一覧</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='base-style.css') }}">
-</head>
-<body>
-    <h1>{{ title }}</h1>
-    <ul class="breadcrumb">
-        <li><a href="{{ url_for('index') }}">HOME</a></li>
-        <li><a href="{{ url_for('product.list') }}">日付・時間一覧</a></li>
 
-    </ul>
-    <a href="{{ url_for('product.add') }}">新しい日付・時間追加</a>
-    <table>
-        <thead>
-            <tr>
-                <th>&nbsp;</th>
-                <th>日付</th>
-                <th>時~</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for product in items %}
-            <tr>
-                <td><a href="{{ url_for('product.edit', product_id=product.id) }}">編集</a></td>
-                <td>{{ product.name }}</td>
-                <td>{{ product.price }}</td>
-            </tr>
+<head><meta charset="UTF-8"><title>シフト枠登録</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"></head>
+<body>
+<div class="container">
+    <h1> シフト枠登録 (Product)</h1>
+    <div class="panel">
+        <form method="POST">
+            日付: <input type="date" name="date" required>
+            時間: <input type="text" name="time_range" placeholder="17:00-22:00" required>
+            <button type="submit">登録</button>
+        </form>
+    </div>
+    <div class="panel" style="margin-top:20px;">
+        <table class="styled-table">
+            <tr><th>ID</th><th>日付</th><th>時間</th></tr>
+            {% for p in products %}
+            <tr><td>{{ p.id }}</td><td>{{ p.date }}</td><td>{{ p.name }}</td></tr>
             {% endfor %}
-        </tbody>
-    </table>
+        </table>
+    </div>
+    <a href="/">TOPへ</a>
+</div>
 </body>
 </html>

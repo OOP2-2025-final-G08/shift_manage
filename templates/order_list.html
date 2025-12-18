@@ -1,36 +1,35 @@
 <!DOCTYPE html>
 <html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <title>データ一覧</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='base-style.css') }}">
-</head>
+<head><meta charset="UTF-8"><title>希望提出</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"></head>
 <body>
-    <h1>{{ title }}</h1>
-    <ul class="breadcrumb">
-        <li><a href="{{ url_for('index') }}">HOME</a></li>
-        <li><a href="{{ url_for('order.list') }}">希望日確認</a></li>
-    </ul>
 
-    <table>
-        <thead>
+<div class="container">
+    <h1>🙋 シフト希望提出 (Order)</h1>
+    <div class="panel">
+        <form method="POST">
+            スタッフ: <select name="user_id">
+                {% for u in users %}<option value="{{ u.id }}">{{ u.name }}</option>{% endfor %}
+            </select>
+            枠: <select name="product_id">
+                {% for p in products %}<option value="{{ p.id }}">{{ p.date }} / {{ p.name }}</option>{% endfor %}
+            </select>
+            <button type="submit">提出</button>
+        </form>
+    </div>
+    <div class="panel" style="margin-top:20px;">
+        <table class="styled-table">
+            <tr><th>スタッフ</th><th>希望枠</th><th>提出日時</th></tr>
+            {% for o in orders %}
             <tr>
-                <th>&nbsp;</th>
-                <th>スタッフ</th>
-                <th>希望日(希望時間)</th>
-                <th>提出日時</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for order in items %}
-            <tr>
-                <td><a href="{{ url_for('order.edit', order_id=order.id) }}">編集</a></td>
-                <td>{{ order.user.name }}</td>
-                <td>{{ order.product.name }}</td>
-                <td>{{ order.order_date }}</td>
+                <td>{{ o.user.name }}</td>
+                <td>{{ o.product.date }} {{ o.product.name }}</td>
+                <td>{{ o.created_at }}</td>
             </tr>
             {% endfor %}
-        </tbody>
-    </table>
+        </table>
+    </div>
+    <a href="/">TOPへ</a>
+</div>
 </body>
 </html>
