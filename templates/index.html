@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title>シフト管理ダッシュボード</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="/static/style.css"> <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="container">
-        <h1>📅 シフト希望提出システム Dashboard</h1>
+        <h1>📅 シフト希望提出システム Dashboard <span id="target-month"></span></h1>
 
         <div class="nav-links">
             <a href="/users" class="btn-nav">👤 スタッフ登録 (User)</a>
@@ -19,15 +18,15 @@
         <div class="summary-cards">
             <div class="card" style="border-top-color: #1abc9c;">
                 <h3>スタッフ数</h3>
-                <p class="number">{{ total_users }}</p>
+                <p class="number" id="total-users">-</p>
             </div>
             <div class="card" style="border-top-color: #3498db;">
                 <h3>募集枠数</h3>
-                <p class="number">{{ total_products }}</p>
+                <p class="number" id="total-products">-</p>
             </div>
             <div class="card" style="border-top-color: #e74c3c;">
                 <h3>希望提出数</h3>
-                <p class="number">{{ total_orders }}</p>
+                <p class="number" id="total-orders">-</p>
             </div>
         </div>
 
@@ -37,62 +36,73 @@
                 <div style="width: 80%; margin: 0 auto;">
                     <canvas id="genderChart"></canvas>
                 </div>
-                <script id="gender-labels-data" type="application/json">{{ gender_labels | tojson }}</script>
-                <script id="gender-values-data" type="application/json">{{ gender_data | tojson }}</script>
             </div>
 
             <div class="panel">
-                <h2>🏆 希望提出数ランキング</h2>
+                <h2>🏆 今月の提出数ランキング</h2>
                 <table class="styled-table">
                     <thead><tr><th>順位</th><th>名前</th><th>回数</th></tr></thead>
-                    <tbody>
-                        {% for item in user_ranking %}
-                        <tr>
-                            <td>{{ loop.index }}</td>
-                            <td>{{ item.user.name }}</td>
-                            <td>{{ item.count }} 回</td>
-                        </tr>
-                        {% else %}<tr><td colspan="3">なし</td></tr>{% endfor %}
-                    </tbody>
+                    <tbody id="user-ranking-body">
+                        </tbody>
                 </table>
             </div>
 
             <div class="panel" style="grid-column: 1 / -1;">
-                <h2>🔥 人気シフト枠</h2>
+                <h2>🔥 人気シフト枠 (今月)</h2>
                 <table class="styled-table">
                     <thead><tr><th>順位</th><th>日時</th><th>希望者</th></tr></thead>
-                    <tbody>
-                        {% for item in product_ranking %}
-                        <tr>
-                            <td>{{ loop.index }}</td>
-                            <td>{{ item.product.date }} / {{ item.product.name }}</td>
-                            <td>{{ item.count }} 人</td>
-                        </tr>
-                        {% else %}<tr><td colspan="3">なし</td></tr>{% endfor %}
-                    </tbody>
+                    <tbody id="product-ranking-body">
+                        </tbody>
                 </table>
             </div>
         </div>
     </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const canvas = document.getElementById('genderChart');
-            if (canvas) {
-                const ctx = canvas.getContext('2d');
-                const labels = JSON.parse(document.getElementById('gender-labels-data').textContent);
-                const data = JSON.parse(document.getElementById('gender-values-data').textContent);
+            // FlaskのAPIからデータを取得
+            fetch('/api/stats')
+                .then(response => response.json())
+                .then(data => {
+                    // 1. 月表示とサマリーの更新
+                    document.getElementById('target-month').innerText = `(${data.month})`;
+                    document.getElementById('total-users').innerText = data.totals.users;
+                    document.getElementById('total-products').innerText = data.totals.products;
+                    document.getElementById('total-orders').innerText = data.totals.orders;
 
-                new Chart(ctx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            data: data,
-                            backgroundColor: ['#36A2EB', '#FF6384', '#FFCE56']
-                        }]
-                    }
+                    // 2. 男女比率チャートの描画
+                    const ctx = document.getElementById('genderChart').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: data.gender.labels,
+                            datasets: [{
+                                data: data.gender.values,
+                                backgroundColor: ['#36A2EB', '#FF6384', '#FFCE56']
+                            }]
+                        }
+                    });
+
+                    // 3. スタッフランキングの構築
+                    const userBody = document.getElementById('user-ranking-body');
+                    userBody.innerHTML = data.user_ranking.map((item, index) => `
+                        <tr>
+                            <td>${index + 1}</td>
+                            <td>${item.name}</td>
+                            <td>${item.count} 回</td>
+                        </tr>
+                    `).join('') || '<tr><td colspan="3">データなし</td></tr>';
+
+                    // 4. 人気シフト枠の構築
+                    const productBody = document.getElementById('product-ranking-body');
+                    productBody.innerHTML = data.product_ranking.map((item, index) => `
+                        <tr>
+                            <td>${index + 1}</td>
+                            <td>${item.date} / ${item.name}</td>
+                            <td>${item.count} 人</td>
+                        </tr>
+                    `).join('') || '<tr><td colspan="3">データなし</td></tr>';
                 });
-            }
         });
     </script>
 </body>
