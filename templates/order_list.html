@@ -47,23 +47,26 @@
             {% else %}
                 <p>
                     スタッフ：
-                    <select name="user_id">
+                     <select name="user_id" id="user-select" onchange="updateProductList()" required>
+                        <option value="">選択してください</option>
                         {% for u in users %}
-                        <option value="{{ u.id }}">{{ u.name }}</option>
+                            <option value="{{ u.id }}" {% if selected_user_id == u.id|string %}selected{% endif %}>
+                            {{ u.name }}
+                            </option>
+                            {% endfor %}
+                    </select>
+                </p>
+                
+                <p>
+                    希望枠：
+                    <select name="product_id" required>
+                        <option value="">枠を選択してください</option>
+                        {% for p in products %}
+                        <option value="{{ p.id }}">{{ p.date }} {{ p.name }}</option>
                         {% endfor %}
                     </select>
                 </p>
 
-                <p>
-                    希望枠：
-                    <select name="product_id">
-                        {% for p in products %}
-                        <option value="{{ p.id }}">
-                            {{ p.date }} / {{ p.name }}
-                        </option>
-                        {% endfor %}
-                    </select>
-                </p>
 
                 <button type="submit">提出</button>
             {% endif %}
@@ -110,6 +113,17 @@
         <a href="/">← TOPへ</a>
     </p>
 </div>
+
+<script>
+function updateProductList() {
+    const userSelect = document.getElementById('user-select');
+    const userId = userSelect.value;
+    if (userId) {
+        // スタッフを選んだら、URLにIDをつけてページを読み直す
+        window.location.href = "{{ url_for('order.index') }}?user_id=" + userId;
+    }
+}
+</script>
 
 </body>
 </html>

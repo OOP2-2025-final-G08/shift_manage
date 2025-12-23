@@ -8,6 +8,8 @@ def index():
     edit_id = request.args.get('edit')
     delete_id = request.args.get('delete')
 
+    selected_user_id = request.args.get('user_id')
+
     # ===== 削除 =====
     if delete_id:
         order = Order.get_or_none(Order.id == delete_id)
@@ -50,10 +52,29 @@ def index():
     users = User.select()
     products = Product.select().order_by(Product.date)
 
+    # 選択されたスタッフのIDを取得（URLパラメータにある場合）
+    selected_user_id = request.args.get('user_id')
+    
+    if selected_user_id:
+        # そのスタッフが既に提出した product_id のリストを取得
+        submitted_product_ids = [
+            o.product.id for o in Order.select().where(Order.user == selected_user_id)
+        ]
+        # まだ提出していない枠だけをフィルタリング
+        products = Product.select().where(Product.id.not_in(submitted_product_ids))
+    else:
+        # スタッフが選ばれていない時は全件（または空）
+        products = Product.select()
+
+    # ...以下、render_template で products を渡す...
+
+    orders = Order.select().order_by(Order.created_at.desc())
+
     return render_template(
         'order_list.html',
         orders=orders,
         users=users,
         products=products,
-        edit_order=edit_order
+        edit_order=edit_order,
+        selected_user_id=selected_user_id
     )
