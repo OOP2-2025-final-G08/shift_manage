@@ -14,6 +14,8 @@ def list():
 
 @order_bp.route('/add', methods=['GET', 'POST'])
 def add():
+    print("add route called")
+
     if request.method == 'POST':
         user_id = request.form['user_id']
         product_id = request.form['product_id']
