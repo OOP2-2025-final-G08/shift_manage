@@ -1,35 +1,107 @@
 <!DOCTYPE html>
 <html lang="ja">
-<head><meta charset="UTF-8"><title>希望提出</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"></head>
+<head>
+    <meta charset="UTF-8">
+    <title>希望提出</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
 <body>
 
 <div class="container">
     <h1>🙋 シフト希望提出 (Order)</h1>
+
+    <!-- ===== 提出・編集フォーム ===== -->
     <div class="panel">
         <form method="POST">
-            スタッフ: <select name="user_id">
-                {% for u in users %}<option value="{{ u.id }}">{{ u.name }}</option>{% endfor %}
-            </select>
-            枠: <select name="product_id">
-                {% for p in products %}<option value="{{ p.id }}">{{ p.date }} / {{ p.name }}</option>{% endfor %}
-            </select>
-            <button type="submit">提出</button>
+
+            {% if edit_order %}
+                <input type="hidden" name="order_id" value="{{ edit_order.id }}">
+                <p style="color:#e67e22;">※ 編集モード</p>
+
+                <p>
+                    スタッフ：{{ edit_order.user.name }}
+                </p>
+
+                <p>
+                    日付：{{ edit_order.product.date }}
+                </p>
+
+                <p>
+                    時間：
+                    <input type="text" name="product_name"
+                           value="{{ edit_order.product.name }}"
+                           required>
+                </p>
+
+                <button type="submit">更新</button>
+                <a href="{{ url_for('order.index') }}">キャンセル</a>
+
+            {% else %}
+                <p>
+                    スタッフ：
+                    <select name="user_id">
+                        {% for u in users %}
+                        <option value="{{ u.id }}">{{ u.name }}</option>
+                        {% endfor %}
+                    </select>
+                </p>
+
+                <p>
+                    希望枠：
+                    <select name="product_id">
+                        {% for p in products %}
+                        <option value="{{ p.id }}">
+                            {{ p.date }} / {{ p.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </p>
+
+                <button type="submit">提出</button>
+            {% endif %}
+
         </form>
     </div>
+
+    <!-- ===== 提出一覧 ===== -->
     <div class="panel" style="margin-top:20px;">
         <table class="styled-table">
-            <tr><th>スタッフ</th><th>希望枠</th><th>提出日時</th></tr>
-            {% for o in orders %}
-            <tr>
-                <td>{{ o.user.name }}</td>
-                <td>{{ o.product.date }} {{ o.product.name }}</td>
-                <td>{{ o.created_at }}</td>
-            </tr>
-            {% endfor %}
+            <thead>
+                <tr>
+                    <th>スタッフ</th>
+                    <th>希望枠</th>
+                    <th>提出日時</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for o in orders %}
+                <tr {% if edit_order and edit_order.id == o.id %}style="background:#fff8e1;"{% endif %}>
+                    <td>{{ o.user.name }}</td>
+                    <td>{{ o.product.date }} {{ o.product.name }}</td>
+                    <td>{{ o.created_at }}</td>
+                    <td>
+                        <a href="{{ url_for('order.index', edit=o.id) }}">編集</a>
+                        |
+                        <a href="{{ url_for('order.index', delete=o.id) }}"
+                           onclick="return confirm('この希望を削除しますか？')">
+                            削除
+                        </a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="4">まだ希望はありません</td>
+                </tr>
+                {% endfor %}
+            </tbody>
         </table>
     </div>
-    <a href="/">TOPへ</a>
+
+    <p style="margin-top:20px;">
+        <a href="/">← TOPへ</a>
+    </p>
 </div>
+
 </body>
 </html>
