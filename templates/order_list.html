@@ -19,7 +19,15 @@
                 <p style="color:#e67e22;">※ 編集モード</p>
 
                 <p>
-                    スタッフ：{{ edit_order.user.name }}
+                    スタッフ：
+                    <select name="user_id">
+                        {% for u in users %}
+                        <option value="{{ u.id }}"
+                            {% if u.id == edit_order.user.id %}selected{% endif %}>
+                            {{ u.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
                 </p>
 
                 <p>

@@ -8,7 +8,7 @@ def index():
     edit_id = request.args.get('edit')
     delete_id = request.args.get('delete')
 
-    # ===== 削除処理 =====
+    # ===== 削除 =====
     if delete_id:
         order = Order.get_or_none(Order.id == delete_id)
         if order:
@@ -27,12 +27,17 @@ def index():
         if order_id:
             # --- 編集 ---
             order = Order.get_by_id(order_id)
-            new_time = request.form['product_name']
 
-            # 紐づく Product の時間帯を変更
+            # スタッフ変更
+            order.user = request.form['user_id']
+
+            # 時間変更
+            new_time = request.form['product_name']
             product = order.product
             product.name = new_time
             product.save()
+
+            order.save()
         else:
             # --- 新規提出 ---
             user_id = request.form['user_id']
